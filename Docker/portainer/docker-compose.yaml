@@ -1,4 +1,4 @@
---
+---
 services:
   portainer:
     image: portainer/portainer-ce:latest
@@ -8,6 +8,7 @@ services:
       - no-new-privileges:true
     networks:
       - proxy
+    env_file: .env
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
