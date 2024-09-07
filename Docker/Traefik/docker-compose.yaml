@@ -4,6 +4,10 @@ services:
     image: traefik:latest
     container_name: traefik
     restart: unless-stopped
+    env_file: .env # env file name
+    environment: #require env fle
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} 
+      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
     security_opt:
       - no-new-privileges:true
     networks:
@@ -13,10 +17,6 @@ services:
       - 443:443
       - 81:81 # external http
       - 444:444 # external https
-    environment: #require env fle
-      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} 
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
-    env_file: .env # env file name
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
