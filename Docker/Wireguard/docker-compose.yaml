@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      - WG_HOST=wireguard.${APP_DOMAIN}
+      - PASSWORD=${PASSWORD}
     volumes:
       - wireguard:/etc/wireguard
     networks:
