@@ -1,7 +1,7 @@
 ---
 services:
   cloudflaretunnel:
-    container_name: cloudflaretunnel-demo-1
+    container_name: cloudflaretunnel
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
     env_file: .env
