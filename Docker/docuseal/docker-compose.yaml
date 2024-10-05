@@ -1,0 +1,30 @@
+services:
+  docuseal:
+    image: docuseal/docuseal:latest
+    container_name: docuseal
+    restart: unless-stopped
+    env_file: .env
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    volumes:
+      - docuseal:/data/docuseal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.docuseal.entrypoints=http"
+      - "traefik.http.routers.docuseal.rule=Host(`docuseal.${APP_DOMAIN}`)"
+      - "traefik.http.middlewares.docuseal-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.docuseal.middlewares=docuseal-https-redirect"
+      - "traefik.http.routers.docuseal-secure.entrypoints=https"
+      - "traefik.http.routers.docuseal-secure.rule=Host(`docuseal.${APP_DOMAIN}`)"
+      - "traefik.http.routers.docuseal-secure.tls=true"
+      - "traefik.http.routers.docuseal-secure.service=docuseal"
+      - "traefik.http.services.docuseal.loadbalancer.server.port=3000"
+      - "traefik.docker.network=proxy"
+volumes:
+  docuseal:
+
+networks:
+  proxy:
+    external: true
