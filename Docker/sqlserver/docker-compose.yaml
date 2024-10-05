@@ -7,7 +7,7 @@ services:
     env_file: .env
     environment:
       - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD={PASSWORD}
+      - MSSQL_SA_PASSWORD=${PASSWORD}
       - TZ=Etc/UCT
     security_opt:
       - no-new-privileges:true
