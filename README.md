@@ -1,2 +1,2 @@
 # HomeLab_ConfigFiles
-Configurations Files
+Configuration Files
