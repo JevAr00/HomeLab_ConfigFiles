@@ -10,7 +10,7 @@ services:
     volumes:
       - vaultwarden:/data/
     networks:
-      proxy:
+      proxy_external:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.vaultwarden.entrypoints=http"
@@ -27,5 +27,5 @@ volumes:
   vaultwarden:
 
 networks:
-  proxy:
+  proxy_external:
     external: true
