@@ -12,11 +12,10 @@ services:
       - no-new-privileges:true
     networks:
       - proxy
+      - proxy_external
     ports:
       - 80:80
       - 443:443
-      - 81:81 # external http
-      - 444:444 # external https
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -42,4 +41,6 @@ services:
 
 networks:
   proxy:
+    external: true
+  proxy_external:
     external: true
