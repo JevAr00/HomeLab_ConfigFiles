@@ -9,8 +9,8 @@ services:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     command: tunnel --no-autoupdate run
     networks:
-      - proxy
+      - proxy_external
 
 networks:
-  proxy:
+  proxy_external:
     external: true
