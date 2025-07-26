@@ -52,7 +52,7 @@ http:
     pihole:
       loadBalancer:
         servers:
-          - url: "http://${TRAEFIK_PIHOLE_IP}:80"
+          - url: "http://${TRAEFIK_PIHOLE_IP}:8080"
         passHostHeader: true
 
 #endregion
