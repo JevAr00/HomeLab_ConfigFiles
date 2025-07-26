@@ -15,7 +15,7 @@ http:
     proxmox:
       entryPoints:
         - "https"
-      rule: "Host(`proxmox.url.com`)"
+      rule: "Host(`proxmox.${APP_DOMAIN}`)"
       middlewares:
         - secured
       tls: {}
@@ -24,7 +24,7 @@ http:
     pihole:
       entryPoints:
         - "https"
-      rule: "Host(`pihole.url.com`)"
+      rule: "Host(`pihole.${APP_DOMAIN}`)"
       middlewares:
         - secured
         - pihole-redirect
@@ -46,13 +46,13 @@ http:
     proxmox:
       loadBalancer:
         servers:
-          - url: "https://IP_Server:8006"
+          - url: "https://${TRAEFIK_PROXMOX_IP}:8006"
         passHostHeader: true
         
     pihole:
       loadBalancer:
         servers:
-          - url: "http://IP_Server:80"
+          - url: "http://${TRAEFIK_PIHOLE_IP}:80"
         passHostHeader: true
 
 #endregion
@@ -93,7 +93,7 @@ http:
 
     pihole-redirect:
       redirectRegex:
-        regex: "^https?://pihole.url.com/$"
-        replacement: "https://pihole.url.com/admin/"
+        regex: "^https?://pihole.${APP_DOMAIN}/$"
+        replacement: "https://pihole.${APP_DOMAIN}/admin/"
         
 #endregion
