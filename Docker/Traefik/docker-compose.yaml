@@ -5,9 +5,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      APP_DOMAIN: 
-      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
-      TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+      APP_DOMAIN: ${APP_DOMAIN}
     security_opt:
       - no-new-privileges:true
     networks:
