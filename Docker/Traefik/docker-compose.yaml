@@ -1,12 +1,11 @@
----
 services:
   traefik:
-    image: traefik:latest
     container_name: traefik
+    image: traefik:latest
     restart: unless-stopped
-    env_file: .env # env file name
-    environment: #require env fle
-      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} 
+    env_file: .env
+    environment:
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
     security_opt:
       - no-new-privileges:true
@@ -24,12 +23,13 @@ services:
       - ./data/config.yml:/config.yml:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.${APP_DOMAIN}`)"
-      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
-      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      # Router HTTP que redirige al HTTPS (requerido si no se usa el redirect-all, definido en el config.yaml)
+      #- "traefik.http.routers.traefik.entrypoints=http"
+      #- "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.${APP_DOMAIN}`)"
+      #- "traefik.http.routers.traefik.middlewares=redirect-to-https"
+      #- "traefik.http.routers.traefik.service=noop@internal"
+      
+      # Router HTTPS principal
       - "traefik.http.routers.traefik-secure.entrypoints=https"
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.${APP_DOMAIN}`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
