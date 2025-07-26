@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      APP_DOMAIN: 
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
     security_opt:
@@ -23,18 +24,24 @@ services:
       - ./data/config.yml:/config.yml:ro
     labels:
       - "traefik.enable=true"
-      # Router HTTP que redirige al HTTPS (requerido si no se usa el redirect-all, definido en el config.yaml)
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth,sslheader"
+
+      # Middlewares
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+      
+      # Routers
+      #HTTP que redirige al HTTPS (requerido si no se usa el redirect-all, definido en el config.yaml)
       #- "traefik.http.routers.traefik.entrypoints=http"
       #- "traefik.http.routers.traefik.rule=Host(`traefik-dashboard.${APP_DOMAIN}`)"
       #- "traefik.http.routers.traefik.middlewares=redirect-to-https"
       #- "traefik.http.routers.traefik.service=noop@internal"
       
-      # Router HTTPS principal
-      - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.${APP_DOMAIN}`)"
-      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      #HTTPS
       - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
       - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik-dashboard.${APP_DOMAIN}`)"
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=${APP_DOMAIN}"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.${APP_DOMAIN}"
       - "traefik.http.routers.traefik-secure.service=api@internal"
