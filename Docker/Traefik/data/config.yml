@@ -1,33 +1,54 @@
 http:
+
  #region routers 
   routers:
+  
+   #Redirect all Http to Https
+   redirect-all:
+       entryPoints:
+         - http
+       rule: "HostRegexp(`{any:.+}`)"
+       middlewares:
+         - https-redirect
+       service: noop@internal
+       
     proxmox:
       entryPoints:
         - "https"
       rule: "Host(`proxmox.url.com`)"
       middlewares:
-        - default-headers
+        - secured
       tls: {}
       service: proxmox
+      
     pihole:
       entryPoints:
         - "https"
       rule: "Host(`pihole.url.com`)"
       middlewares:
-        - default-headers
+        - secured
         - pihole-redirect
       tls: {}
       service: pihole
-   
-
+      
 #endregion
+
 #region services
   services:
+  
+  #No operation service required for redirect-all router
+  #Optional if used noop@internal
+    noop:
+      loadBalancer:
+        servers:
+          - url: "http://127.0.0.1"
+  
     proxmox:
       loadBalancer:
         servers:
           - url: "https://IP_Server:8006"
         passHostHeader: true
+        
     pihole:
       loadBalancer:
         servers:
@@ -35,11 +56,10 @@ http:
         passHostHeader: true
 
 #endregion
+
+#region middlewares
   middlewares:
-    pihole-redirect:
-      redirectRegex:
-        regex: "^https?://pihole.url.com/$"
-        replacement: "https://pihole.url.com/admin/"
+
     https-redirect:
       redirectScheme:
         scheme: https
@@ -58,7 +78,6 @@ http:
         customRequestHeaders:
           X-Forwarded-Proto: https
 
-
     default-whitelist:
       ipWhiteList:
         sourceRange:
@@ -71,3 +90,10 @@ http:
         middlewares:
         - default-whitelist
         - default-headers
+
+    pihole-redirect:
+      redirectRegex:
+        regex: "^https?://pihole.url.com/$"
+        replacement: "https://pihole.url.com/admin/"
+        
+#endregion
