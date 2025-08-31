@@ -1,58 +1,57 @@
 http:
 
- #region routers 
+ #region routers
   routers:
-  
+
    #Redirect all Http to Https
-   redirect-all:
+    redirect-all:
        entryPoints:
          - http
        rule: "HostRegexp(`{any:.+}`)"
        middlewares:
          - https-redirect
        service: noop@internal
-       
+
     proxmox:
       entryPoints:
         - "https"
-      rule: "Host(`proxmox.${APP_DOMAIN}`)"
+      rule: "Host(`proxmox.{DOAMAINNAME}`)"
       middlewares:
         - secured
       tls: {}
       service: proxmox
-      
-    pihole:
+
+    technitium:
       entryPoints:
         - "https"
-      rule: "Host(`pihole.${APP_DOMAIN}`)"
+      rule: "Host(`technitium.{DOAMAINNAME}`)"
       middlewares:
         - secured
-        - pihole-redirect
       tls: {}
-      service: pihole
-      
+      service: technitium
+
 #endregion
 
 #region services
   services:
-  
+
   #No operation service required for redirect-all router
   #Optional if used noop@internal
     noop:
       loadBalancer:
         servers:
           - url: "http://127.0.0.1"
-  
+
     proxmox:
       loadBalancer:
         servers:
-          - url: "https://${TRAEFIK_PROXMOX_IP}:8006"
+          - url: "https://{SERVICE_IP}:8006"
         passHostHeader: true
-        
-    pihole:
+
+    technitium:
       loadBalancer:
         servers:
-          - url: "http://${TRAEFIK_PIHOLE_IP}:8080"
+          - url: "http://{SERVICE_IP}:5380"
         passHostHeader: true
 
 #endregion
@@ -82,7 +81,7 @@ http:
       ipWhiteList:
         sourceRange:
         - "10.0.0.0/8"
-        - "192.168.0.0/16"
+        - "192.168.0.0/24"
         - "172.16.0.0/12"
 
     secured:
@@ -90,10 +89,3 @@ http:
         middlewares:
         - default-whitelist
         - default-headers
-
-    pihole-redirect:
-      redirectRegex:
-        regex: "^https?://pihole.${APP_DOMAIN}/$"
-        replacement: "https://pihole.${APP_DOMAIN}/admin/"
-        
-#endregion
