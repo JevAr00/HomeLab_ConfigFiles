@@ -1,0 +1,28 @@
+# It is required to configure a jenkins agent
+# This will work as controller only
+---
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:latest
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - jenkins-data:/var/jenkins_home
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.jenkins-secure.tls=true"
+      - "traefik.http.routers.jenkins-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.jenkins-secure.service=jenkins"
+      - "traefik.http.routers.jenkins-secure.entrypoints=https"
+      - "traefik.http.routers.jenkins-secure.rule=Host(`jenkins.${APP_DOMAIN}`)"
+      - "traefik.http.services.jenkins.loadbalancer.server.port=8080"
+
+volumes:
+  jenkins-data:
+
+networks:
+  proxy:
+    external: true
