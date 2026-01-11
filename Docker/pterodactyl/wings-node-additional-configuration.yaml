@@ -1,0 +1,22 @@
+#node configuration file here
+docker:
+  network:
+    interface: 172.20.0.1 #should match the same that was used in the wings compose file
+    dns:
+    - ${LOCAL_DNS_IP}
+    - 1.0.0.1
+    name: wings0
+    ispn: false
+    driver: bridge
+    network_mode: wings0
+    is_internal: false
+    enable_icc: true
+    network_mtu: 1500
+    interfaces:
+      v4:
+        subnet: 172.20.0.0/16 #should match the same that was used in the wings compose file
+        gateway: 172.20.0.1
+allowed_mounts: []
+allowed_origins: []
+allow_cors_private_network: false
+ignore_panel_config_updates: false
