@@ -1,0 +1,45 @@
+---
+services:
+  wings:
+      image: ghcr.io/pterodactyl/wings:latest
+      container_name: pterodactyl_wings
+      restart: unless-stopped
+      ports:
+        - 2022:2022 # SFTP
+      stdin_open: true
+      tty: true
+      environment:
+        TZ: Etc/UTC
+        APP_TIMEZONE: America/Costa_Rica
+        WINGS_UID: 1000
+        WINGS_GID: 1000
+        WINGS_USERNAME: pterodactyl
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+        - "/var/lib/docker/containers/:/var/lib/docker/containers/"
+        - "/etc/pterodactyl/:/etc/pterodactyl/"
+        - "/var/lib/pterodactyl/:/var/lib/pterodactyl/"
+        - "/var/log/pterodactyl/:/var/log/pterodactyl/"
+        - "/tmp/pterodactyl/:/tmp/pterodactyl/"
+        - "/etc/ssl/certs:/etc/ssl/certs:ro"
+      networks:
+        #- proxy
+        - wings0
+      # require if mounted in the same docker instance (with traefik)
+      #labels:
+        #- "traefik.enable=true"
+        #- "traefik.docker.network=proxy"
+        #- "traefik.http.routers.wings0-secure.tls=true"
+        #- "traefik.http.routers.wings0-secure.tls.certresolver=cloudflare"
+        #- "traefik.http.routers.wings0-secure.entrypoints=https"
+        #- "traefik.http.routers.wings0-secure.service=wings0"
+        #- "traefik.http.routers.wings0-secure.rule=Host(`wings0.${APP_DOMAIN}`)"
+        #- "traefik.http.services.wings0.loadbalancer.server.port=443"
+
+networks:
+  wings0:
+    name: wings0
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.20.0.0/16" # make sure this doesn't conflict with existing networks
