@@ -1,3 +1,4 @@
+## DB Error - Missing Dependency
 It is possible that the panel container wont work correctly
 
 if the error is
@@ -46,6 +47,9 @@ docker compose run --rm panel php artisan p:user:make --email=admin@domain.com -
 ```
 
 
+## Config file
+
+ config.yml file should be created/modified in the following route /etc/pterodactyl/ (wings node), then, node required to be restarted
 
 
 
