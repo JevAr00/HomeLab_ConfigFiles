@@ -1,0 +1,122 @@
+---
+services:
+  db:
+    image: mariadb:latest
+    container_name: pterodactyl_mariadb
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./panel/db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: panel
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ADMIN_PASSWORD}
+    networks:
+      - pterodactyl
+
+  cache:
+    image: redis:alpine
+    container_name: pterodactyl_redis
+    restart: unless-stopped
+    networks:
+      - pterodactyl
+
+  panel:
+    image: ghcr.io/pterodactyl/panel:latest
+    container_name: pterodactyl_panel
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - "./panel/var/:/app/var/"
+      - "./panel/logs/:/app/storage/logs"
+      - "./panel/nginx/:/etc/nginx/conf.d/"
+    environment:
+      RECAPTCHA_ENABLED: false
+      TZ: Etc/UTC
+      APP_TIMEZONE: America/Costa_Rica
+      APP_ENV: production
+      APP_ENVIRONMENT_ONLY: false
+      APP_URL: https://gpanel.${APP_DOMAIN}
+      #APP_SERVICE_AUTHOR: noreply@example.com
+      #MAIL_FROM: noreply@example.com
+      #MAIL_DRIVER: smtp
+      #MAIL_HOST: mail.example.com
+      #MAIL_PORT: 587
+      #MAIL_USERNAME: noreply@example.com
+      #MAIL_PASSWORD: REPLACE_WITH_YOUR_EMAIL_PASSWORD
+      #MAIL_ENCRYPTION: false
+      TRUSTED_PROXIES: "*"
+      PTERODACTYL_TELEMETRY_ENABLED: false
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USERNAME: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      QUEUE_DRIVER: redis
+      REDIS_HOST: cache
+    networks:
+      - proxy_external
+      - pterodactyl
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy_external"
+      - "traefik.http.routers.panel-secure.tls=true"
+      - "traefik.http.routers.panel-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.panel-secure.service=panel"
+      - "traefik.http.routers.panel-secure.entrypoints=https"
+      - "traefik.http.routers.panel-secure.rule=Host(`gpanel.${APP_DOMAIN}`)"
+      - "traefik.http.services.panel.loadbalancer.server.port=80"
+
+  wings:
+    image: ghcr.io/pterodactyl/wings:latest
+    container_name: wings
+    restart: unless-stopped
+    ports:
+      - 2022:2022 # SFTP
+    stdin_open: true
+    tty: true
+    environment:
+      TZ: Etc/UTC
+      APP_TIMEZONE: America/Costa_Rica
+      WINGS_UID: 1000
+      WINGS_GID: 1000
+      WINGS_USERNAME: pterodactyl
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/lib/docker/containers/:/var/lib/docker/containers/"
+      - "/etc/pterodactyl/:/etc/pterodactyl/"
+      - "/var/lib/pterodactyl/:/var/lib/pterodactyl/"
+      - "/var/log/pterodactyl/:/var/log/pterodactyl/"
+      - "/tmp/pterodactyl/:/tmp/pterodactyl/"
+      - "/etc/ssl/certs:/etc/ssl/certs:ro"
+    networks:
+      - proxy
+      - wings0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.wings0-secure.tls=true"
+      - "traefik.http.routers.wings0-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.wings0-secure.entrypoints=https"
+      - "traefik.http.routers.wings0-secure.service=wings0"
+      - "traefik.http.routers.wings0-secure.rule=Host(`wings0.${APP_DOMAIN}`)"
+      - "traefik.http.services.wings0.loadbalancer.server.port=443"
+
+networks:
+  pterodactyl:
+    name: pterodactyl
+  proxy:
+    external: true
+  proxy_external:
+    external: true
+  wings0:
+    name: wings0
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.50.0.0/16" # make sure this doesn't conflict with existing networks if more wings services are created
+    driver_opts:
+      com.docker.network.bridge.name: wings0
