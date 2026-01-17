@@ -24,18 +24,7 @@ services:
         - "/tmp/pterodactyl/:/tmp/pterodactyl/"
         - "/etc/ssl/certs:/etc/ssl/certs:ro"
       networks:
-        #- proxy
         - wings0
-      # require if mounted in the same docker instance (with traefik)
-      #labels:
-        #- "traefik.enable=true"
-        #- "traefik.docker.network=proxy"
-        #- "traefik.http.routers.wings0-secure.tls=true"
-        #- "traefik.http.routers.wings0-secure.tls.certresolver=cloudflare"
-        #- "traefik.http.routers.wings0-secure.entrypoints=https"
-        #- "traefik.http.routers.wings0-secure.service=wings0"
-        #- "traefik.http.routers.wings0-secure.rule=Host(`wings0.${APP_DOMAIN}`)"
-        #- "traefik.http.services.wings0.loadbalancer.server.port=443"
 
 networks:
   wings0:
