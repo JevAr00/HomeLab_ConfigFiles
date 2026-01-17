@@ -2,9 +2,10 @@
 services:
   wings:
       image: ghcr.io/pterodactyl/wings:latest
-      container_name: pterodactyl_wings
+      container_name: wings
       restart: unless-stopped
       ports:
+        - 443:443
         - 2022:2022 # SFTP
       stdin_open: true
       tty: true
