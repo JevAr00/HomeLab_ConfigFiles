@@ -12,8 +12,6 @@ services:
       environment:
         TZ: Etc/UTC
         APP_TIMEZONE: America/Costa_Rica
-        WINGS_UID: 1000
-        WINGS_GID: 1000
         WINGS_USERNAME: pterodactyl
       volumes:
         - "/var/run/docker.sock:/var/run/docker.sock"
@@ -22,6 +20,9 @@ services:
         - "/var/lib/pterodactyl/:/var/lib/pterodactyl/"
         - "/var/log/pterodactyl/:/var/log/pterodactyl/"
         - "/tmp/pterodactyl/:/tmp/pterodactyl/"
+        - "/run/wings:/run/wings:rw"
+        - "/etc/machine-id:/etc/machine-id:ro"
+        - "/var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro"
         - "/etc/ssl/certs:/etc/ssl/certs:ro"
       networks:
         - wings0
