@@ -45,6 +45,11 @@ chmod 644 ${DEST}/*.pem
 docker restart wings
 ```
 
+Make the script executable
+```bash
+sudo chmod +x ~/scripts/sync-certs.sh
+```
+
 4. Run the script
 ```bash
 sudo certbot certonly --dns-cloudflare \
