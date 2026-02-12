@@ -1,6 +1,7 @@
 # Important
 1. If complete installation will be performed in the same node, use de all in one docker file
 2. If panel and wings will be installed in different nodes, traefik configuration file won't work. Wings node will required to create its own SSL certificate to connect properly to the panel. Certbot documentation with cloudflare and autorenewal should be followed
+3. It is recommended to use ubuntu as base OS for individual nodes or full installation
 
 ## Config file
 config.yml file should be created/modified in the following route /etc/pterodactyl/ (wings node), then, node required to be restarted. If installed in a separate node do not forget to change the SSL route, system default won't work due to folder restrictions
