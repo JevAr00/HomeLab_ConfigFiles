@@ -28,7 +28,7 @@ sudo mkdir -p /etc/pterodactyl/certs
 sudo chown -R YOURUSER:YOURUSER /etc/pterodactyl/certs
 ```
 
-3. Create the script ```sync-certs.sh```
+4. Create the script ```sync-certs.sh```
 ```bash
 #!/bin/bash
 SOURCE="/etc/letsencrypt/live/YOURDOMAIN.com"
@@ -45,7 +45,7 @@ chmod 644 ${DEST}/*.pem
 docker restart wings
 ```
 
-Make the script executable
+5. Make the script executable
 ```bash
 sudo chmod +x ~/scripts/sync-certs.sh
 ```
