@@ -50,7 +50,7 @@ docker restart wings
 sudo chmod +x ~/scripts/sync-certs.sh
 ```
 
-4. Run the script
+6. Run the script
 ```bash
 sudo certbot certonly --dns-cloudflare \
 --dns-cloudflare-credentials ~/.secrets/cloudflare.ini \
@@ -61,7 +61,7 @@ sudo certbot certonly --dns-cloudflare \
 
 __NOTE__: If wings is not running you will see an error in the console but certificate will be created and autorenewal will be set correctly
 
-5. change certs path in config file
+7. change certs path in config file
 ```yml
 ssl:
     enabled: true
