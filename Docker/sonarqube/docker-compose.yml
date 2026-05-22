@@ -19,7 +19,7 @@ services:
       - "traefik.http.routers.sonarqube-secure.tls.certresolver=cloudflare"
       - "traefik.http.routers.sonarqube-secure.service=sonarqube"
       - "traefik.http.routers.sonarqube-secure.entrypoints=https"
-      - "traefik.http.routers.sonarqube-secure.rule=Host(`sonarqube.${APP_DOMAIN}`)"
+      - "traefik.http.routers.sonarqube-secure.rule=Host(`sonarqube-internal.${APP_DOMAIN}`)"
       - "traefik.http.services.sonarqube.loadbalancer.server.port=9000"
 
 volumes:
