@@ -1,0 +1,30 @@
+---
+services:
+  sonarqube:
+    container_name: sonarqube
+    image: sonarqube:latest
+    restart: unless-stopped
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - sonarqube:/data/
+    networks:
+      - proxy_external
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy_external"
+      - "traefik.http.routers.sonarqube-secure.tls=true"
+      - "traefik.http.routers.sonarqube-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.sonarqube-secure.service=sonarqube"
+      - "traefik.http.routers.sonarqube-secure.entrypoints=https"
+      - "traefik.http.routers.sonarqube-secure.rule=Host(`sonarqube.${APP_DOMAIN}`)"
+      - "traefik.http.services.sonarqube.loadbalancer.server.port=9000"
+
+volumes:
+  sonarqube:
+
+networks:
+  proxy_external:
+    external: true
