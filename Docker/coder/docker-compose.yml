@@ -32,14 +32,13 @@ services:
       - "traefik.http.routers.coder-secure.service=coder"
       - "traefik.http.routers.coder-secure.entrypoints=https"
       - "traefik.http.routers.coder-secure.rule=Host(`coder.${APP_DOMAIN}`)"
-      - "traefik.http.services.coder.loadbalancer.server.port=80"
+      - "traefik.http.services.coder.loadbalancer.server.port=7080"
     depends_on:
       database:
         condition: service_healthy
     networks:
-      proxy_external:
-        external: true
-      coder:
+      - proxy_external
+      - coder
   database:
     container_name: coder-database-postgres
     # Minimum supported version is 13.
@@ -64,7 +63,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      coder:
+      - coder
 volumes:
   coder_data:
   coder_home:
+networks:
+   proxy_external:
+     external: true
+   coder:
