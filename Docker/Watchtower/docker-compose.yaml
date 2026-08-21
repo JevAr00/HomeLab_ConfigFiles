@@ -2,7 +2,7 @@
 services:
   watchtower:
     container_name: watchtower
-    image: containrrr/watchtower
+    image: nickfedor/watchtower
     restart: unless-stopped
     environment:
       - TZ=America/Costa_Rica
